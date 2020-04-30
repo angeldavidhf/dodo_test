@@ -16,7 +16,7 @@ export interface IUsers {
 }
 
 export interface UserState {
-	user?: IUser;
+	user: IUser;
 	users: IUsers[];
 	message: string;
 }

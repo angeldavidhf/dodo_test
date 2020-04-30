@@ -1,15 +1,25 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk'
+import {Action, applyMiddleware, combineReducers, compose, createStore,} from "redux";
+import thunk, {ThunkMiddleware} from "redux-thunk";
 
-import userReducer from './users/reducer';
+import { userReducer, UserState } from "./users/reducer";
 
 const rootReducer = combineReducers({
-    user: userReducer
-})
+  user: userReducer,
+});
 
-const store = createStore(
-    rootReducer, 
-    applyMiddleware(thunk)
+
+interface rootState extends
+  UserState
+{}
+
+export interface DispatchAction extends Action {
+  payload: rootState;
+}
+
+const middleware = thunk as ThunkMiddleware<rootState, DispatchAction>;
+
+
+export default createStore(
+  rootReducer,
+  compose(applyMiddleware(middleware))
 );
-
-export default store;

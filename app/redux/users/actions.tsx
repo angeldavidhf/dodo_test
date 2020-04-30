@@ -1,52 +1,50 @@
-export const AddUserResponse = (data: IUser) => {
-  return {
-    type: USER_ACTION_TYPES.ADD_USER,
-    payload: data
-  }
-}
+import { ThunkAction } from "redux-thunk";
+import { Action, Dispatch } from "redux";
+import axios, { AxiosError } from "axios";
+import { UserState, User } from "./reducer";
 
-export const GetUsersResponse = (data: IUsers[]) => {
-  return {
-    type: USER_ACTION_TYPES.GET_USERS,
-    payload: data
-  }
-}
-
-export const ErrorResponse = (message: string) => {
-  return {
-    type: USER_ACTION_TYPES.ERROR_REQUEST,
-    message: message
-  }
-}
-
-import { IUser, IUsers, USER_ACTION_TYPES } from "./types";
-import axios from 'axios';
 import { API } from '../../constants';
 
-
-export const addUser = (newUser: IUser) => {
-  return (dispatch: any) => {
-    axios.post(API.ULR + 'user',{
-      "name": newUser.name,
-      "job": newUser.job
-    })
-    .then(response => {
-      dispatch(AddUserResponse(response.data));
-    })
-    .catch(error => {
-      dispatch(ErrorResponse(error.message))
-    })
-  }
+export enum USER_ACTION_tYPES {
+  ADD_USER = "ADD_USER",
+  GET_USERS = "GET_USERS",
+  ERROR = "ERROR",
+  LOADING = "LOADING"
 }
 
-export const getUsers = () => {
-  return (dispatch: any) => {
-    axios.get(API.ULR + 'user')
-    .then((response) => {
-      dispatch(GetUsersResponse(response.data));
+export const addUser = (user: User): ThunkAction<void, UserState, null, Action<string>> => async dispatch => {
+	axios
+		.post(`${API.ULR}user`, {
+      "name": user.name,
+      "job": user.job
     })
-    .catch((error) => {
-      dispatch(ErrorResponse(error))
-    });
-  }
-}
+		.then((response) => {
+			dispatch({
+				type: USER_ACTION_tYPES.ADD_USER,
+				payload: response.data
+      });
+		})
+		.catch((error: AxiosError) => {
+			dispatch({
+				type: USER_ACTION_tYPES.ERROR,
+				payload: { message: `Error: ${error.response}` }
+			});
+		})
+};
+
+export const getUsers = (): ThunkAction<void, UserState, null, Action<string>> => async dispatch => {
+	axios
+		.get(`${API.ULR}users?page=2`)
+		.then((response) => {
+			dispatch({
+				type: USER_ACTION_tYPES.GET_USERS,
+				payload: response.data.data
+      });
+		})
+		.catch((error: AxiosError) => {
+			dispatch({
+				type: USER_ACTION_tYPES.ERROR,
+				payload: { message: `Error: ${error.response}` }
+			});
+		})
+};

@@ -1,37 +1,42 @@
-import { UserState, UserResponseTypes, USER_ACTION_TYPES } from './types';
+import { Reducer } from "redux";
+import { DispatchAction } from "../store";
+import { USER_ACTION_tYPES } from './actions';
+
+export interface User {
+  name: string;
+  job: string;
+}
+ 
+export interface UserState {
+  users: [];
+  user: {}
+  message: string;
+}
 
 const initialState: UserState = {
   users: [],
-  user: {
-    name: '',
-    job: ''
-  },
+  user: {},
   message: ''
 }
 
-function userReducer(
-    state: UserState = initialState,
-    action: UserResponseTypes
-  ): UserState {
-    switch (action.type) {
-      case USER_ACTION_TYPES.ADD_USER:
-        return { 
-          ...state, 
-          user: action.payload 
-        };
-      case USER_ACTION_TYPES.GET_USERS:
-        return { 
-          ...state, 
-          users: action.payload 
-        };
-      case USER_ACTION_TYPES.ERROR_REQUEST:
-        return { 
-          ...state, 
-          message: action.message 
-        };
-      default:
-        return state
-    }
+export const userReducer: Reducer<UserState, DispatchAction> = (state: UserState = initialState, action) => {
+  switch (action.type) {
+    case USER_ACTION_tYPES.ADD_USER:
+      return {
+        ...state,
+        user: action.payload || {}
+      };
+    case USER_ACTION_tYPES.GET_USERS:
+      return {
+        ...state,
+        users: action.payload || []
+      };
+    case USER_ACTION_tYPES.ERROR:
+      return {
+        ...state,
+        message: action.payload || ''
+      };
+    default:
+      return state;
   }
-
-export default userReducer
+};
